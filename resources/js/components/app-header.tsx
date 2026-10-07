@@ -1,5 +1,18 @@
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, CalendarIcon, CreditCardIcon, Folder, Info, InfoIcon, LandPlotIcon, LayoutGrid, Menu, NotebookPenIcon, Search, UserRoundIcon, } from 'lucide-react';
+import {
+    BookOpen,
+    CalendarIcon,
+    CreditCardIcon,
+    Folder,
+    Info,
+    InfoIcon,
+    LandPlotIcon,
+    LayoutGrid,
+    Menu,
+    NotebookPenIcon,
+    Search,
+    UserRoundIcon,
+} from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { Breadcrumbs } from '@/components/breadcrumbs';
@@ -32,7 +45,17 @@ import { UserMenuContent } from '@/components/user-menu-content';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { useInitials } from '@/hooks/use-initials';
 import { cn, toUrl } from '@/lib/utils';
-import { about, bookings, courts, dashboard, home, members, payments, reservations, profile } from '@/routes';
+import {
+    about,
+    bookings,
+    courts,
+    dashboard,
+    home,
+    members,
+    payments,
+    reservations,
+    profile,
+} from '@/routes';
 import type { BreadcrumbItem, NavItem } from '@/types';
 
 type Props = {
@@ -45,24 +68,24 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
-   
-     {
+
+    {
         title: 'Courts',
         href: courts(),
         icon: LandPlotIcon,
     },
-     
+
     {
-            title: 'Bookings',
-            href: bookings(),
-            icon: NotebookPenIcon,
- },
-    {
-            title: 'My Reservations',
-            href: reservations(),
-            icon: CalendarIcon,
+        title: 'Bookings',
+        href: bookings(),
+        icon: NotebookPenIcon,
     },
-     {
+    {
+        title: 'My Reservations',
+        href: reservations(),
+        icon: CalendarIcon,
+    },
+    {
         title: 'Payments',
         href: payments(),
         icon: CreditCardIcon,
@@ -72,8 +95,6 @@ const mainNavItems: NavItem[] = [
         href: profile(),
         icon: UserRoundIcon,
     },
-   
-
 ];
 
 const rightNavItems: NavItem[] = [
