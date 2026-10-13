@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;            // CHANGE 1: new import
 use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -22,6 +23,8 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string $name
  * @property string $email
  * @property string $role
+ * @property string|null $avatar
+ * @property-read string|null $avatar_url
  * @property-read Wallet|null $wallet
  * @property-read Collection<int, CashInRequest> $cashInRequests
  * @property-read Collection<int, CashOutRequest> $cashOutRequests
@@ -34,12 +37,15 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'avatar'])]   // CHANGE 2: added 'avatar'
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
+
+    /** Send avatar_url to the React pages automatically. */
+    protected $appends = ['avatar_url'];               // CHANGE 3a: new property
 
     protected static function booted(): void
     {
@@ -48,6 +54,14 @@ class User extends Authenticatable implements PasskeyUser
                 $user->wallet()->firstOrCreate([], ['balance' => 0, 'held_balance' => 0]);
             }
         });
+    }
+
+    // CHANGE 3b: new accessor
+    public function getAvatarUrlAttribute(): ?string
+    {
+        return $this->avatar
+            ? Storage::disk('public')->url($this->avatar)
+            : null;
     }
 
     /** @return HasOne<Wallet, $this> */

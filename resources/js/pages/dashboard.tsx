@@ -64,6 +64,9 @@ export default function Dashboard({
     const { auth } = usePage().props;
 
     const firstName = auth?.user?.name?.split(' ')[0] ?? 'there';
+    const avatarUrl =
+        (auth?.user as { avatar_url?: string | null } | undefined)
+            ?.avatar_url ?? null;
 
     return (
         <>
@@ -72,14 +75,33 @@ export default function Dashboard({
             <div className="min-h-screen bg-[#eff5fc] px-6 py-6 text-[#173353] md:px-10 lg:px-12">
                 <div className="mx-auto max-w-[1500px]">
                     {/* ================= HEADER ================= */}
-                    <div className="mb-7">
-                        <h1 className="text-2xl font-bold tracking-tight text-[#2f6fb3] md:text-3xl">
-                            {getGreeting()}, {firstName}!
-                        </h1>
+                    <div className="mb-7 flex items-center gap-4">
+                        {/* Avatar */}
+                        <Link
+                            href="/profile"
+                            aria-label="Go to profile"
+                            className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-white bg-[#e7f1fb] shadow-sm transition hover:ring-2 hover:ring-[#77aee4] md:h-16 md:w-16"
+                        >
+                            {avatarUrl ? (
+                                <img
+                                    src={avatarUrl}
+                                    alt={`${auth?.user?.name ?? 'User'} profile photo`}
+                                    className="h-full w-full object-cover"
+                                />
+                            ) : (
+                                <UserRound className="h-7 w-7 text-[#2f6fb3] md:h-8 md:w-8" />
+                            )}
+                        </Link>
 
-                        <p className="mt-1 text-sm text-[#566d86] md:text-base">
-                            Here's your account overview.
-                        </p>
+                        <div>
+                            <h1 className="text-2xl font-bold tracking-tight text-[#2f6fb3] md:text-3xl">
+                                {getGreeting()}, {firstName}!
+                            </h1>
+
+                            <p className="mt-1 text-sm text-[#566d86] md:text-base">
+                                Here's your account overview.
+                            </p>
+                        </div>
                     </div>
 
                     {/* ================= OVERVIEW CARDS ================= */}
@@ -140,11 +162,11 @@ export default function Dashboard({
                                         Total Reservations
                                     </p>
 
-                                    <p className="mt-2 text-4xl font-bold text-white">
+                                    <p className="mt-2 text-4xl font-bold text-[#173353]">
                                         {monthlyReservations}
                                     </p>
 
-                                    <p className="mt-2 text-sm text-[#a8bfd7]">
+                                    <p className="mt-2 text-sm text-[#566d86]">
                                         This month
                                     </p>
                                 </div>

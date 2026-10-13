@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Storage;
 use App\Models\Court;
 use App\Models\FacilitySetting;
 use App\Models\Reservation;
@@ -221,26 +221,37 @@ class CustomerPortalController extends Controller
     }
 
     public function updateProfile(Request $request): RedirectResponse
-    {
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email,'.$request->user()->id],
-            'phone' => ['nullable', 'string', 'max:30'],
-        ]);
+{
+    $data = $request->validate([
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'email', 'max:255', 'unique:users,email,'.$request->user()->id],
+        'phone' => ['nullable', 'string', 'max:30'],
+        'avatar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+        'remove_avatar' => ['nullable', 'boolean'],
+    ]);
 
-        $user = $request->user();
-        $user->fill(['name' => $data['name'], 'email' => $data['email']]);
-        $user->phone = $data['phone'] ?? null;
+    $user = $request->user();
+    $user->fill(['name' => $data['name'], 'email' => $data['email']]);
+    $user->phone = $data['phone'] ?? null;
 
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
+    if ($request->hasFile('avatar')) {
+        if ($user->avatar) {
+            Storage::disk('public')->delete($user->avatar);
         }
-
-        $user->save();
-
-        return back()->with('success', 'Profile updated.');
+        $user->avatar = $request->file('avatar')->store('avatars', 'public');
+    } elseif ($request->boolean('remove_avatar') && $user->avatar) {
+        Storage::disk('public')->delete($user->avatar);
+        $user->avatar = null;
     }
 
+    if ($user->isDirty('email')) {
+        $user->email_verified_at = null;
+    }
+
+    $user->save();
+
+    return back()->with('success', 'Profile updated.');
+}
     /** @return array{string, string} */
     private function operatingHours(): array
     {

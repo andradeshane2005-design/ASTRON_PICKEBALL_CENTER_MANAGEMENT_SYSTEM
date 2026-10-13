@@ -30,8 +30,8 @@
             }
         </style>    
 
-        <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
-        <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
+       <link rel="icon" href="{{ asset('Astron_LOGO.png') }}" type="image/png">
+        <link rel="apple-touch-icon" href="{{ asset('Astron_LOGO.png') }}">
 
         @fonts
 

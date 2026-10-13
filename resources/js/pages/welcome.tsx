@@ -1,6 +1,6 @@
 import { Head, Link, usePage } from '@inertiajs/react';
 import { dashboard, login, register } from '@/routes';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     CalendarCheck,
     Clock,
@@ -19,6 +19,24 @@ const NAV_LINKS: { label: string; tab: Tab }[] = [
     { label: 'Reservations', tab: 'reservations' },
     { label: 'About', tab: 'about' },
 ];
+
+// Hero slideshow images — save the three photos in public/images/ with these names.
+const SLIDES = [
+    {
+        src: 'onepic.png',
+        alt: 'Lit outdoor pickleball courts at Astron Pickleball Center',
+    },
+    {
+        src: 'threepic.png',
+        alt: 'Players enjoying a game at Astron Pickleball Center',
+    },
+    {
+        src: 'twopic.png',
+        alt: 'Community night play at Astron Pickleball Center',
+    },
+];
+
+const SLIDE_INTERVAL_MS = 2000;
 
 const FEATURES = [
     {
@@ -106,6 +124,21 @@ export default function Welcome() {
     const [selectedSlot, setSelectedSlot] = useState('4:00 PM - 5:00 PM');
     const [selectedCourt, setSelectedCourt] = useState(COURTS[0].name);
 
+    // Hero slideshow: auto-advance while the Home tab is visible.
+    const [slide, setSlide] = useState(0);
+
+    useEffect(() => {
+        if (tab !== 'home') {
+            return;
+        }
+
+        const timer = setInterval(() => {
+            setSlide((current) => (current + 1) % SLIDES.length);
+        }, SLIDE_INTERVAL_MS);
+
+        return () => clearInterval(timer);
+    }, [tab, slide]);
+
     return (
         <>
             <Head title="Astron Pickleball Center" />
@@ -118,10 +151,12 @@ export default function Welcome() {
                             onClick={() => setTab('home')}
                             className="flex items-center gap-2 rounded-md text-lg font-semibold tracking-tight text-[#2f6fb3] transition hover:-translate-y-0.5 hover:text-[#24598f]"
                         >
-                            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#2f6fb3] text-white">
-                                A
-                            </span>
-                            ASTRON
+                            <img
+                                src="/logo.png"
+                                alt="Astron Pickleball Leyte logo"
+                                className="h-10 w-10 object-contain"
+                            />
+                            Astron Pickleball Center
                         </button>
                         <nav className="hidden items-center gap-8 text-sm font-medium text-[#536a84] md:flex">
                             {NAV_LINKS.map((link) => (
@@ -171,12 +206,38 @@ export default function Welcome() {
                 {tab === 'home' && (
                     <>
                         <section className="relative isolate flex min-h-[440px] items-center overflow-hidden bg-[#102b48] text-white sm:min-h-[480px]">
-                            <img
-                                src="/courts.jpg"
-                                alt="Lit outdoor pickleball courts at Astron Pickleball Center"
-                                className="absolute inset-0 -z-20 h-full w-full object-cover object-center"
-                            />
+                            {/* Slideshow images (cross-fade) */}
+                            {SLIDES.map((item, index) => (
+                                <img
+                                    key={item.src}
+                                    src={item.src}
+                                    alt={item.alt}
+                                    className={`absolute inset-0 -z-20 h-full w-full object-cover object-center transition-opacity duration-700 ease-in-out ${
+                                        index === slide
+                                            ? 'opacity-100'
+                                            : 'opacity-0'
+                                    }`}
+                                />
+                            ))}
                             <div className="absolute inset-0 -z-10 bg-[#0b1c32]/65" />
+
+                            {/* Slide indicators */}
+                            <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2">
+                                {SLIDES.map((item, index) => (
+                                    <button
+                                        key={item.src}
+                                        type="button"
+                                        aria-label={`Go to slide ${index + 1}`}
+                                        onClick={() => setSlide(index)}
+                                        className={`h-2 rounded-full transition-all duration-300 ${
+                                            index === slide
+                                                ? 'w-6 bg-white'
+                                                : 'w-2 bg-white/50 hover:bg-white/80'
+                                        }`}
+                                    />
+                                ))}
+                            </div>
+
                             <div className="mx-auto w-full max-w-6xl px-6 py-14">
                                 <div className="max-w-2xl">
                                     <p className="mb-3 text-sm font-semibold text-[#c7e1fb]">
